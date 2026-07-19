@@ -55,3 +55,15 @@ CodeCoverage/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
+
+# Node/Vite/Playwright
+node_modules/
+dist/
+playwright-report/
+test-results/
+.playwright-mcp/
+.env.local
+.env
+
+# Submission archive (build artifact)
+*.zip
