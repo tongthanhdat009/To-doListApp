@@ -12,6 +12,10 @@ public sealed class TodoItemConfiguration : IEntityTypeConfiguration<TodoItem>
         builder.HasKey(item => item.Id);
         builder.Property(item => item.Id).HasColumnName("id");
         builder.Property(item => item.Title).HasColumnName("title").HasMaxLength(200).IsRequired();
+        builder.Property(item => item.Description).HasColumnName("description").HasMaxLength(2000);
+        builder.Property(item => item.Priority).HasColumnName("priority").HasConversion<string>().HasMaxLength(6)
+            .HasDefaultValue(TodoPriority.Medium).HasSentinel(TodoPriority.Medium).IsRequired();
+        builder.Property(item => item.DueDate).HasColumnName("due_date").HasColumnType("date");
         builder.Property(item => item.IsCompleted).HasColumnName("is_completed").IsRequired();
         builder.Property(item => item.CreatedAt).HasColumnName("created_at").IsRequired();
         builder.Property(item => item.UpdatedAt).HasColumnName("updated_at").IsRequired();

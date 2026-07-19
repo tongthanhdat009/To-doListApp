@@ -67,3 +67,6 @@ test-results/
 
 # Submission archive (build artifact)
 *.zip
+AGENTS.md
+/.claude
+/.omc

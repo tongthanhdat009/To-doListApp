@@ -1,21 +1,28 @@
 import { apiRequest } from "./http";
 
-export function fetchTodos() {
-  return apiRequest("/api/todos");
+function queryString(params = {}) {
+  const query = new URLSearchParams();
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && String(value).trim() !== "") query.set(key, value);
+  });
+  const value = query.toString();
+  return value ? `?${value}` : "";
 }
 
-export function createTodo(title) {
-  return apiRequest("/api/todos", {
-    method: "POST",
-    body: JSON.stringify({ title }),
-  });
+export function fetchTodos(params) {
+  return apiRequest(`/api/todos${queryString(params)}`);
 }
 
-export function updateTodo(id, title) {
-  return apiRequest(`/api/todos/${id}`, {
-    method: "PUT",
-    body: JSON.stringify({ title }),
-  });
+export function fetchTrash(params) {
+  return apiRequest(`/api/todos/trash${queryString(params)}`);
+}
+
+export function createTodo(todo) {
+  return apiRequest("/api/todos", { method: "POST", body: JSON.stringify(todo) });
+}
+
+export function updateTodo(id, todo) {
+  return apiRequest(`/api/todos/${id}`, { method: "PUT", body: JSON.stringify(todo) });
 }
 
 export function setTodoCompletion(id, isCompleted) {
@@ -27,4 +34,12 @@ export function setTodoCompletion(id, isCompleted) {
 
 export function deleteTodo(id) {
   return apiRequest(`/api/todos/${id}`, { method: "DELETE" });
+}
+
+export function restoreTodo(id) {
+  return apiRequest(`/api/todos/${id}/restore`, { method: "POST" });
+}
+
+export function permanentlyDeleteTodo(id) {
+  return apiRequest(`/api/todos/${id}/permanent`, { method: "DELETE" });
 }
