@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using TodoApp.Application.DTOs;
+using TodoApp.Application.Exceptions;
 using TodoApp.Application.Interfaces;
 
 namespace TodoApp.API.Controllers;
@@ -23,20 +24,32 @@ public sealed class TodosController(ITodoService todoService) : ControllerBase
     public async Task<IActionResult> Create([FromBody] CreateTodoRequest request, CancellationToken cancellationToken)
     {
         if (!ModelState.IsValid) return ValidationProblem(ModelState);
-        if (string.IsNullOrWhiteSpace(request.Title))
-            return ValidationProblem(detail: "Title cannot be blank.");
-        var item = await todoService.CreateAsync(request, cancellationToken);
-        return CreatedAtAction(nameof(GetById), new { id = item.Id }, item);
+
+        try
+        {
+            var item = await todoService.CreateAsync(request, cancellationToken);
+            return CreatedAtAction(nameof(GetById), new { id = item.Id }, item);
+        }
+        catch (TodoValidationException exception)
+        {
+            return ValidationProblem(detail: exception.Message);
+        }
     }
 
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateTodoRequest request, CancellationToken cancellationToken)
     {
         if (!ModelState.IsValid) return ValidationProblem(ModelState);
-        if (string.IsNullOrWhiteSpace(request.Title))
-            return ValidationProblem(detail: "Title cannot be blank.");
-        var item = await todoService.UpdateAsync(id, request, cancellationToken);
-        return item is null ? NotFound() : Ok(item);
+
+        try
+        {
+            var item = await todoService.UpdateAsync(id, request, cancellationToken);
+            return item is null ? NotFound() : Ok(item);
+        }
+        catch (TodoValidationException exception)
+        {
+            return ValidationProblem(detail: exception.Message);
+        }
     }
 
     [HttpPatch("{id:guid}/completion")]
